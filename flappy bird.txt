@@ -62,7 +62,7 @@ jumpButton.MouseButton1Click:Connect(jump)
 local exitButton = Instance.new("TextButton")
 local corner = Instance.new("UICorner")
 exitButton.Size = UDim2.new(0, 50, 0, 45)
-exitButton.Position = UDim2.new(1, -70, 0, 10)
+exitButton.Position = UDim2.new(0.5, -25, 0, 10)
 exitButton.Text = "X"
 exitButton.TextSize = 24
 exitButton.Font = "FredokaOne"
