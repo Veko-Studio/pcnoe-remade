@@ -1,6 +1,0 @@
---rbxassetid://5850252275
---AMONG US
---local test1 = true --a test;local test2 = 1 --a test;local test3 = "test" --a test;local test4 = Color3.new(0,1,1) --a test;local test5 = Vector3.new(5,5,5) --a test;
---1.say hi\n2.now fly
---true
------------------------------------PCNOE HUB DATA-----------------------------------
