@@ -1,0 +1,153 @@
+--rbxassetid://81771554423726
+--Flappy Bird
+--
+--have fun
+--false
+-----------------------------------PCNOE HUB DATA-----------------------------------
+local gui = Instance.new("ScreenGui")
+gui.Name = "FlappyBirdGame"
+gui.IgnoreGuiInset = true
+gui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local gameFrame = Instance.new("Frame")
+gameFrame.Size = UDim2.new(1, 0, 1, 0)
+gameFrame.BackgroundColor3 = Color3.fromRGB(77, 194, 203)
+gameFrame.Parent = gui
+
+local bird = Instance.new("ImageLabel")
+bird.Size = UDim2.new(0, 41, 0, 30)
+bird.Position = UDim2.new(0.2, -16, 0.9, -15)
+bird.BackgroundTransparency = 1
+bird.Parent = gameFrame
+
+local birdFrames = {
+    "rbxassetid://96051635244958",
+    "rbxassetid://104480021254835",
+    "rbxassetid://76745734370381"
+}
+local currentFrame = 1
+
+local function animateBird()
+    while true do
+        bird.Image = birdFrames[currentFrame]
+        currentFrame = currentFrame % #birdFrames + 1
+        wait(0.1)
+    end
+end
+
+spawn(animateBird)
+
+local jumpButton = Instance.new("ImageButton")
+jumpButton.Size = UDim2.new(0, 83, 0, 83)
+jumpButton.Position = UDim2.new(0.5, -50, 0.7, -50)
+jumpButton.Image = "rbxassetid://119291898564586"
+jumpButton.BackgroundTransparency = 1
+jumpButton.ZIndex = 2
+jumpButton.Parent = gameFrame
+
+local isGameOver = false
+local birdVelocity = 0
+
+local function jump()
+    if not isGameOver then
+        birdVelocity = -15
+        jumpButton.Image = "rbxassetid://91140047005345"
+                wait(0.05)
+        jumpButton.Image = "rbxassetid://119291898564586"
+    end
+end
+
+jumpButton.MouseButton1Click:Connect(jump)
+
+local exitButton = Instance.new("TextButton")
+local corner = Instance.new("UICorner")
+exitButton.Size = UDim2.new(0, 50, 0, 45)
+exitButton.Position = UDim2.new(1, -70, 0, 10)
+exitButton.Text = "X"
+exitButton.TextSize = 24
+exitButton.Font = "FredokaOne"
+exitButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+exitButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+exitButton.ZIndex = 3
+exitButton.Parent = gameFrame
+corner.CornerRadius = UDim.new(0, 40)
+corner.Parent = exitButton
+
+local function createPipe(height, isTop)
+    local pipe = Instance.new("ImageLabel")
+    pipe.Size = UDim2.new(0, 50, 0, height)
+    pipe.Image = "rbxassetid://93518102403011"
+    pipe.BackgroundTransparency = 1
+    pipe.BorderSizePixel = 0
+    if isTop then
+        pipe.Position = UDim2.new(1, 0, 0, 0)
+        pipe.Rotation = 180
+    else
+        pipe.Position = UDim2.new(1, 0, 1, -height)
+    end
+    pipe.Parent = gameFrame
+    return pipe
+end
+
+local function checkCollision()
+    for _, child in ipairs(gameFrame:GetChildren()) do
+        if child:IsA("ImageLabel") and child.Image == "rbxassetid://93518102403011" then
+            local birdPos = bird.AbsolutePosition
+            local birdSize = bird.AbsoluteSize
+            local pipePos = child.AbsolutePosition
+            local pipeSize = child.AbsoluteSize
+
+            if birdPos.X < pipePos.X + pipeSize.X and birdPos.X + birdSize.X > pipePos.X and
+               birdPos.Y < pipePos.Y + pipeSize.Y and birdPos.Y + birdSize.Y > pipePos.Y then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+local function gameLoop()
+    while true do
+        if isGameOver then
+            bird.Position = UDim2.new(0.2, -15, 0.5, -15)
+            birdVelocity = 0
+            jumpButton.Visible = true
+            for _, child in ipairs(gameFrame:GetChildren()) do
+                if child:IsA("ImageLabel") and child.Image == "rbxassetid://93518102403011" then
+                    child:Destroy()
+                end
+            end
+            isGameOver = false
+        else
+            birdVelocity = birdVelocity + 2
+            bird.Position = bird.Position + UDim2.new(0, 0, 0, birdVelocity)
+
+            if checkCollision() or bird.Position.Y.Offset > gameFrame.AbsoluteSize.Y - 50 then
+                isGameOver = true
+                jumpButton.Visible = false
+            end
+
+            if math.random(1, 20) == 1 then
+                local pipeHeight = math.random(100, gameFrame.AbsoluteSize.Y - 200)
+                createPipe(pipeHeight, true)
+                createPipe(gameFrame.AbsoluteSize.Y - pipeHeight - 150, false)
+            end
+
+            for _, child in ipairs(gameFrame:GetChildren()) do
+                if child:IsA("ImageLabel") and child.Image == "rbxassetid://93518102403011" then
+                    child.Position = child.Position - UDim2.new(0.02, 0, 0, 0)
+                    if child.Position.X.Scale < -0.1 then
+                        child:Destroy()
+                    end
+                end
+            end
+        end
+        wait(0.05)
+    end
+end
+
+spawn(gameLoop)
+
+exitButton.MouseButton1Click:Connect(function()
+    gui:Destroy()
+end)
