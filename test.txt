@@ -1,0 +1,6 @@
+--rbxassetid://12826892221
+--test file
+--local bool = true;local string = "test";local number = 5;local Color3 = Color3.new(5,5,5);local Vector3 = Vector3.new(0,0,0)
+--aaaaaaaaaaaaa\naaaaaaa
+--false
+-----------------------------------PCNOE HUB DATA-----------------------------------
