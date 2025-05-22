@@ -1,1 +1,401 @@
---nothing here you fucking bastard
+local InsertService = game:GetService("InsertService")
+
+local ReGui = loadstring(game:HttpGet('https://raw.githubusercontent.com/depthso/Dear-ReGui/refs/heads/main/ReGui.lua'))()
+local PrefabsId = "rbxassetid://" .. ReGui.PrefabsId
+
+--// Declare the Prefabs asset
+ReGui:Init({
+	Prefabs = InsertService:LoadLocalAsset(PrefabsId)
+})
+ReGui:DefineTheme("Cherry", {
+	TitleAlign = Enum.TextXAlignment.Center,
+	TextDisabled = Color3.fromRGB(120, 100, 120),
+	Text = Color3.fromRGB(200, 180, 200),
+	
+	FrameBg = Color3.fromRGB(25, 20, 25),
+	FrameBgTransparency = 0.4,
+	FrameBgActive = Color3.fromRGB(120, 100, 120),
+	FrameBgTransparencyActive = 0.4,
+	
+	CheckMark = Color3.fromRGB(150, 100, 150),
+	SliderGrab = Color3.fromRGB(150, 100, 150),
+	ButtonsBg = Color3.fromRGB(150, 100, 150),
+	CollapsingHeaderBg = Color3.fromRGB(150, 100, 150),
+	CollapsingHeaderText = Color3.fromRGB(200, 180, 200),
+	RadioButtonHoveredBg = Color3.fromRGB(150, 100, 150),
+	
+	WindowBg = Color3.fromRGB(35, 30, 35),
+	TitleBarBg = Color3.fromRGB(35, 30, 35),
+	TitleBarBgActive = Color3.fromRGB(50, 45, 50),
+	
+	Border = Color3.fromRGB(50, 45, 50),
+	ResizeGrab = Color3.fromRGB(50, 45, 50),
+	RegionBgTransparency = 1,
+})
+
+local ModalWindow = ReGui:PopupModal({
+	Title = "PCNOE HUB"
+})
+ModalWindow:Label({
+	Text = "thank you for using pcnoe",
+	TextWrapped = true
+})
+ModalWindow:Button({
+	Text = "Okay",
+	Callback = function()
+		ModalWindow:ClosePopup()
+	end,
+})
+local Window = ReGui:Window({
+	Title = "                                     PCNOE HUB                             V3",
+	Theme = "Cherry",
+	Size = UDim2.new(0, 600, 0, 400),
+}):Center()
+
+local Group = Window:List({
+	UiPadding = 2,
+	HorizontalFlex = Enum.UIFlexAlignment.Fill,
+})
+
+local TabsBar = Group:List({
+	Border = true,
+	UiPadding = 5,
+	BorderColor = Window:GetThemeKey("Border"),
+	BorderThickness = 1,
+	HorizontalFlex = Enum.UIFlexAlignment.Fill,
+	HorizontalAlignment = Enum.HorizontalAlignment.Center,
+	AutomaticSize = Enum.AutomaticSize.None,
+	FlexMode = Enum.UIFlexMode.None,
+	Size = UDim2.new(0, 40, 1, 0),
+	CornerRadius = UDim.new(0, 5)
+})
+local TabSelector = Group:TabSelector({
+	NoTabsBar = true,
+	Size = UDim2.fromScale(0.5, 1)
+})
+
+local function CreateTab(Name: string, Icon)
+	local Tab = TabSelector:CreateTab({
+		Name = Name
+	})
+
+	local List = Tab:List({
+		HorizontalFlex = Enum.UIFlexAlignment.Fill,
+		UiPadding = 1,
+		Spacing = 10
+	})
+
+	local Button = TabsBar:Image({
+		Image = Icon,
+		Ratio = 1,
+		RatioAxis = Enum.DominantAxis.Width,
+		Size = UDim2.fromScale(1, 1),
+		Callback = function(self)
+			TabSelector:SetActiveTab(Tab)
+		end,
+	})
+
+	ReGui:SetItemTooltip(Button, function(Canvas)
+		Canvas:Label({
+			Text = Name
+		})
+	end)
+    List:Label({
+        Text = Name,
+        TextSize = 18,
+        TextXAlignment = Enum.TextXAlignment.Center,
+        Size = UDim2.new(1,0,0.1,0)
+
+    })
+	return List
+end
+
+local function CreateRegion(Parent, Title,loc)
+	local Region = Parent:Region({
+		Border = true,
+		BorderColor = Window:GetThemeKey("Border"),
+		BorderThickness = 1,
+		CornerRadius = UDim.new(0, 5),
+        Size = UDim2.new(1,0)
+	})
+    if loc == nil then loc = Enum.TextXAlignment.Left end
+	Region:Label({
+		Text = Title,
+        TextSize = 18,
+        TextXAlignment = loc,
+        Size = UDim2.new(1,0,0.1,0)
+	})
+
+	return Region
+end
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------config
+local Settings = CreateTab("Settings", ReGui.Icons.Settings)
+local OptionsSection = CreateRegion(Settings, "Options")
+OptionsSection:Keybind({
+	Label = "Show / Hide GUI",
+	Value = Enum.KeyCode.RightShift,
+	Callback = function(_, NewKeybind)
+		local IsVisible = Window.Visible
+		Window:SetVisible(not IsVisible)
+	end
+})
+OptionsSection:Button({
+	Text = "Unload Script",
+	Callback = function()
+		Window:Close()
+	end
+})
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------make your own
+local myo = CreateTab("make your own script", ReGui.Icons.Code)
+myo:Button({
+    Text = "planned for the future"
+})
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------script config buttons
+local function createconfig(uireg,name,val,valuetype,comment,tablename)
+local name2 = name
+name = name.."["..valuetype.."]"
+if valuetype == "boolean" then
+    d = uireg:Checkbox({
+	Value = val,
+	Label = name,
+	Callback = function(self, Value: boolean)
+		scriptsvalues[tablename][name2] = {name=name2,value=Value}
+	end
+    })
+elseif valuetype == "number" then
+    d = uireg:InputInt({
+        Label = name,
+        Value = val,
+        Callback = function(self, Value: number)
+		scriptsvalues[tablename][name2] = {name=name2,value=Value}
+	    end
+    })
+elseif valuetype == "string" then
+    d = uireg:InputText({
+        Label = name,
+        Value = string.sub(val, 2, -2),
+        Callback = function(self, Value: string)
+        scriptsvalues[tablename][name2] = {name=name2,value=Value}
+        end
+    })
+elseif valuetype == "Vector3" then
+    d = uireg:InputCFrame({
+        Value = CFrame.new(val:match("%(?%s*(%-?%d+)%s*,%s*(%-?%d+)%s*,%s*(%-?%d+)%s*%)?")),
+        Label = name,
+        Callback = function(self, Value: Vector3)
+        scriptsvalues[tablename][name2] = {name=name2,value=Value}
+        end
+    })
+elseif valuetype == "Color3" then
+    d = uireg:InputColor3({
+        Value = Color3.new(val:match("%(?%s*(%-?%d+)%s*,%s*(%-?%d+)%s*,%s*(%-?%d+)%s*%)?")),
+        Label = name,
+        Callback = function(self, Value: Color3)
+        scriptsvalues[tablename][name2] = {name=name2,value=Value}
+        end
+    })
+else
+    d = uireg:Label({
+        Text = name.." has a unseported type"
+    })
+end
+end
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------value type
+local function detectValueType(val)
+	val = val:match("^%s*(.-)%s*$") -- trim
+
+	-- Boolean
+	if val == "true" or val == "false" then
+		return "boolean"
+
+	-- Number
+	elseif tonumber(val) then
+		return "number"
+
+	-- Vector3: Vector3.new(x, y, z)
+	elseif val:match("^Vector3%.new%(.+%)$") then
+		return "Vector3"
+
+	-- Color3: Color3.fromRGB(r, g, b) or Color3.new(r, g, b)
+	elseif val:match("^Color3%.fromRGB%(.+%)$") or val:match("^Color3%.new%(.+%)$") then
+		return "Color3"
+
+	-- String: wrapped in " " or ' '
+	elseif (val:sub(1, 1) == "\"" and val:sub(-1) == "\"") or (val:sub(1, 1) == "'" and val:sub(-1) == "'") then
+		return "string"
+	end
+
+	return "unknown"
+end
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------script splitting
+local function parseScript(scriptString)
+	local lines = scriptString:split("\n")
+	local result = {}
+
+	-- Line 1: Image – remove first 2 characters
+	local image = string.sub(lines[1] or "", 3)
+	table.insert(result, image)
+
+	-- Line 2: Tutorial – remove first 2 characters
+	local tutorial = string.sub(lines[2] or "", 3)
+	table.insert(result, tutorial)
+
+	-- Line 3: Config variables
+	local varsLine = string.sub(lines[3] or "", 3)
+	local entries = varsLine:split(";")
+	local vars = {}
+
+	for _, entry in ipairs(entries) do
+		entry = entry:match("^%s*(.-)%s*$")
+		if entry ~= "" then
+			local name, value, comment = entry:match("^local%s+([%w_]+)%s*=%s*(.-)%s*%-%-%s*(.+)")
+			if not name then
+				name, value = entry:match("^local%s+([%w_]+)%s*=%s*(.+)")
+				comment = ""
+			end
+
+			if name and value then
+				table.insert(vars, {
+					name = name,
+					value = value,
+					valuetype = detectValueType(value),
+					comment = comment or ""
+				})
+			end
+		end
+	end
+	table.insert(result, vars)
+
+	-- Line 4: Description
+	local description = string.sub(lines[4] or "", 3)
+	table.insert(result, description)
+
+	-- Line 5: Bool toggle check
+	local boolLine = lines[5] or ""
+	local boolFlag = nil
+	if boolLine == "--true" then
+		boolFlag = true
+	elseif boolLine == "--false" then
+		boolFlag = false
+	end
+	table.insert(result, boolFlag)
+
+	return result
+end
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------script loading
+scriptsvalues = {}
+local function loadscript(script)
+local data = parseScript(script)
+local ui = CreateTab(data[2], data[1] or "")
+ui:Button({
+    Text = "Run",
+    Size = UDim2.new(1,0),
+    Callback = function()
+        local newconfigs = scriptsvalues[data[2]]
+        configs = ""
+        print(newconfigs and #newconfigs)
+        if newconfigs and #newconfigs~=0 then
+        for config in newconfigs do
+            configs = configs.."local "..config.name.." = "..tostring(config.value)..";"
+        end
+        end
+        print(configs)
+        local lines = {}
+        for line in script:gmatch("([^\n]*)\n?") do
+            table.insert(lines, line)
+        end
+        if lines[3] and #lines[3] >= 2 then
+            lines[3] = lines[3]:sub(3)..configs
+        end
+        local script = table.concat(lines, "\n")
+        loadstring(script)()
+    end
+})
+local uitut = CreateRegion(ui, "tutorial",Enum.TextXAlignment.Center)
+print(data[4])
+for line in string.gmatch(data[4] .. "\\n", "(.-)\\n") do
+if line~="" then
+uitut:Label({
+    Text = line
+})
+end
+end
+if #data[3]~=0 then
+uiconfig = CreateRegion(ui, "configs",Enum.TextXAlignment.Center)
+end
+for _, val in data[3] do
+    scriptsvalues[data[2]] = {}
+    createconfig(uiconfig,val.name,val.value,val.valuetype,val.comment,data[2])
+end
+end
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------load scripts
+local function loadgithub_txts(owner, repo, branch, blacklist)
+    local HttpService = game:GetService("HttpService")
+
+    -- 1) get a flat list of every file in the branch
+    local apiUrl = ("https://api.github.com/repos/%s/%s/git/trees/%s?recursive=1")
+                    :format(owner, repo, branch)
+    local success, response = pcall(function()
+        return game:HttpGet(apiUrl, true)
+    end)
+    if not success then
+        warn("Failed to fetch GitHub tree:", response)
+        return {}
+    end
+
+    local data = HttpService:JSONDecode(response)
+    local tree = data.tree or {}
+
+    local function isBlacklisted(path)
+        if not blacklist then return false end
+        for _, pat in ipairs(blacklist) do
+            if path:match(pat) then
+                return true
+            end
+        end
+        return false
+    end
+
+    local contents = {}
+    for _, entry in ipairs(tree) do
+        if entry.type == "blob"
+        and entry.path:match("%.txt$")
+        and not isBlacklisted(entry.path) then
+
+            -- URL encode each segment to handle spaces/special characters
+            local segments = {}
+            for segment in entry.path:gmatch("[^/]+") do
+                table.insert(segments, HttpService:UrlEncode(segment))
+            end
+            local encodedPath = table.concat(segments, "/")
+
+            -- 2) fetch each .txt by its raw URL
+            local raw = ("https://raw.githubusercontent.com/%s/%s/%s/%s")
+                        :format(owner, repo, branch, encodedPath)
+
+            local ok, txt = pcall(function()
+                return game:HttpGet(raw, true)
+            end)
+
+            if ok and txt and txt ~= "" then
+                table.insert(contents, txt)
+                print("Loaded:", entry.path)
+            else
+                warn("Failed to fetch or empty:", entry.path)
+            end
+        end
+    end
+
+    print(("Loaded %d .txt file(s)"):format(#contents))
+    return contents
+end
+
+local scripts = loadgithub_txts("Veko-Studio", "pcnoe-remade", "main", nil)
+for i, txt in scripts do
+    loadscript(txt)
+end
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
