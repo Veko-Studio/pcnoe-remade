@@ -4,60 +4,9 @@
 --have fun
 --false
 -----------------------------------PCNOE HUB DATA-----------------------------------
-local runningAnchorTasks = {}
-local function toggleanchorblock(block, state)
-	if not block or not block:IsDescendantOf(workspace) then return end
-	if state == block.AnchoredStd.Anchored then return end -- Already in the desired state!
 
-	-- Cancel old toggle if still running
-	if runningAnchorTasks[block] then
-		runningAnchorTasks[block]:Disconnect()
-		runningAnchorTasks[block] = nil
-	end
-
-	-- Start a controlled toggle
-	local connection
-	connection = game:GetService("RunService").Heartbeat:Connect(function()
-		if block and block.AnchoredStd and block:IsDescendantOf(workspace) then
-			block.Events.Anchor:Fire(true, workspace:GetServerTimeNow(), block.Events.Anchor.KeyBind.Value)
-			block.Events.Anchor:Fire(false, workspace:GetServerTimeNow(), block.Events.Anchor.KeyBind.Value)
-
-			-- Stop once the block's state matches
-			if block.AnchoredStd.Anchored == state then
-				connection:Disconnect()
-				runningAnchorTasks[block] = nil
-			end
-		else
-			-- Block was destroyed or invalid
-			connection:Disconnect()
-			runningAnchorTasks[block] = nil
-		end
-	end)
-
-	runningAnchorTasks[block] = connection
-end
-
-local function moveanchorblockto(block, cframe)
-	if not block or not block:IsDescendantOf(workspace) then return end
-
-	local part = block:FindFirstChild("AnchoredStd")
-	if not part then return end
-
-	if part.Anchored then
-		toggleanchorblock(block, false)
-	end
-
-	if part.CanCollide then
-		part.CanCollide = false
-	end
-
-	if part.CFrame ~= cframe then
-		part.CFrame = cframe
-	end
-
-	part.AssemblyLinearVelocity = Vector3.zero
-	part.AssemblyAngularVelocity = Vector3.zero
-end
+local pcnoe = loadstring(game:HttpGet('https://raw.githubusercontent.com/Veko-Studio/pcnoe-remade/refs/heads/main/pcnoe%20libary'))()
+wait(0)
 
 
 
@@ -155,7 +104,8 @@ local function blockupdate(block,key,object)
 
 			if not error then
 				task.spawn(function()
-					moveanchorblockto(block, object.CFrame)
+					
+pcnoe.moveblock(block, object.CFrame)
 				end)
 			end
 		end
