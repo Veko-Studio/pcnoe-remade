@@ -1,4 +1,9 @@
-hubimage:d/104704508585260
+--rbxassetid://104704508585260
+--Big Character
+--
+--have fun
+--false
+-----------------------------------PCNOE HUB DATA-----------------------------------
 local runningAnchorTasks = {}
 local function toggleanchorblock(block, state)
 	if not block or not block:IsDescendantOf(workspace) then return end
