@@ -1,0 +1,190 @@
+hubimage:d/104704508585260
+local runningAnchorTasks = {}
+local function toggleanchorblock(block, state)
+	if not block or not block:IsDescendantOf(workspace) then return end
+	if state == block.AnchoredStd.Anchored then return end -- Already in the desired state!
+
+	-- Cancel old toggle if still running
+	if runningAnchorTasks[block] then
+		runningAnchorTasks[block]:Disconnect()
+		runningAnchorTasks[block] = nil
+	end
+
+	-- Start a controlled toggle
+	local connection
+	connection = game:GetService("RunService").Heartbeat:Connect(function()
+		if block and block.AnchoredStd and block:IsDescendantOf(workspace) then
+			block.Events.Anchor:Fire(true, workspace:GetServerTimeNow(), block.Events.Anchor.KeyBind.Value)
+			block.Events.Anchor:Fire(false, workspace:GetServerTimeNow(), block.Events.Anchor.KeyBind.Value)
+
+			-- Stop once the block's state matches
+			if block.AnchoredStd.Anchored == state then
+				connection:Disconnect()
+				runningAnchorTasks[block] = nil
+			end
+		else
+			-- Block was destroyed or invalid
+			connection:Disconnect()
+			runningAnchorTasks[block] = nil
+		end
+	end)
+
+	runningAnchorTasks[block] = connection
+end
+
+local function moveanchorblockto(block, cframe)
+	if not block or not block:IsDescendantOf(workspace) then return end
+
+	local part = block:FindFirstChild("AnchoredStd")
+	if not part then return end
+
+	if part.Anchored then
+		toggleanchorblock(block, false)
+	end
+
+	if part.CanCollide then
+		part.CanCollide = false
+	end
+
+	if part.CFrame ~= cframe then
+		part.CFrame = cframe
+	end
+
+	part.AssemblyLinearVelocity = Vector3.zero
+	part.AssemblyAngularVelocity = Vector3.zero
+end
+
+
+
+
+
+
+
+
+
+
+
+-- Place this LocalScript in StarterPlayerScripts (or StarterGui)
+player = game.Players.LocalPlayer
+local character = player.Character
+playerGui = player:WaitForChild("PlayerGui")
+local function message(text)
+	local character = player.Character
+	local head = character:FindFirstChild("Head")
+	if head then
+		game:GetService("TextChatService"):DisplayBubble(head, text)
+	else
+		warn("Head not found in character.")
+	end
+end
+-- Create the ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ErrorGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+-- Create the button
+local button = Instance.new("TextButton")
+button.Name = "ErrorButton"
+button.Size = UDim2.new(0, 200, 0, 50)
+button.Position = UDim2.new(0, 100, 0.5, -25)
+button.AnchorPoint = Vector2.new(0.5, 0.5)
+button.Text = "end script"
+button.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
+button.TextColor3 = Color3.new(1, 1, 1)
+button.Font = Enum.Font.SourceSansBold
+button.TextScaled = true
+button.Parent = screenGui
+
+local sizeBox = Instance.new("TextBox")
+sizeBox.Name = "size"
+sizeBox.Size = UDim2.new(0, 200, 0, 50)
+sizeBox.Text = "size:20"
+sizeBox.Position = UDim2.new(0, 100, 0.5, -75)
+sizeBox.AnchorPoint = Vector2.new(0.5, 0.5)
+sizeBox.PlaceholderText = "size"
+sizeBox.ClearTextOnFocus = true
+sizeBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+sizeBox.TextColor3 = Color3.new(0, 0, 0)
+sizeBox.Font = Enum.Font.SourceSans
+sizeBox.TextScaled = true
+sizeBox.Parent = screenGui
+
+local error = false
+button.MouseButton1Click:Connect(function()
+	screenGui:Destroy()
+	character:ScaleTo(1)
+	error = true
+	error("Forced error after button click")
+end)
+task.spawn(function()
+	while true do
+		wait(0)
+		if workspace:FindFirstChild(game.Players.LocalPlayer.Name.." Aircraft") == nil then
+			character:ScaleTo(1)
+			screenGui:destroy()
+			error = true
+			error("script has ended since build is not loaded")
+		end
+	end
+end)
+
+
+
+
+
+
+
+
+
+local player = game.Players.LocalPlayer
+character = player.Character or player.CharacterAdded:Wait()
+character:ScaleTo(20)
+for _, des in workspace:WaitForChild(game.Players.LocalPlayer.Name.." Aircraft"):GetDescendants() do
+	if des:IsA("BasePart") then des.CanCollide = false end
+end
+local function blockupdate(block,key,object)
+	if block.Name == "AnchoredBlockStd" and block.Events.Anchor.KeyBind.Value == key then
+		while true do
+			wait(0)
+
+			if not error then
+				task.spawn(function()
+					moveanchorblockto(block, object.CFrame)
+				end)
+			end
+		end
+	end
+end
+
+for _, block in workspace:WaitForChild(game.Players.LocalPlayer.Name.." Aircraft"):GetChildren() do
+	task.spawn(function()
+		if block.Name == "AnchoredBlockStd" then
+			blockupdate(block,"T",(character:FindFirstChild("Torso") or character:FindFirstChild("UpperTorso")))
+			blockupdate(block,"H",(character:FindFirstChild("Head")))
+			blockupdate(block,"One",(character:FindFirstChild("LeftUpperArm")  or character:FindFirstChild("Left Arm")))
+			blockupdate(block,"Two",(character:FindFirstChild("RightUpperArm")  or character:FindFirstChild("Right Arm")))
+			blockupdate(block,"Four",(character:FindFirstChild("LeftLowerArm")  or character:FindFirstChild("Left Arm")))
+			blockupdate(block,"Three",(character:FindFirstChild("RightLowerArm")  or character:FindFirstChild("Right Arm")))
+			blockupdate(block,"Five",(character:FindFirstChild("LeftUpperLeg")  or character:FindFirstChild("Left Leg")))
+			blockupdate(block,"Six",(character:FindFirstChild("RightUpperLeg") or character:FindFirstChild("Right Leg")))
+			blockupdate(block,"Seven",(character:FindFirstChild("LeftLowerLeg")  or character:FindFirstChild("Left Leg")))
+			blockupdate(block,"Eight",(character:FindFirstChild("RightLowerLeg") or character:FindFirstChild("Right Leg")))
+			blockupdate(block,"Nine",(character:FindFirstChild("LeftFoot")  or character:FindFirstChild("Left Leg")))
+			blockupdate(block,"Zero",(character:FindFirstChild("RightFoot") or character:FindFirstChild("Right Leg")))
+			--mobile
+			blockupdate(block,"1",(character:FindFirstChild("LeftUpperArm")  or character:FindFirstChild("Left Arm")))
+			blockupdate(block,"2",(character:FindFirstChild("RightUpperArm")  or character:FindFirstChild("Right Arm")))
+			blockupdate(block,"4",(character:FindFirstChild("LeftLowerArm")  or character:FindFirstChild("Left Arm")))
+			blockupdate(block,"3",(character:FindFirstChild("RightLowerArm")  or character:FindFirstChild("Right Arm")))
+			blockupdate(block,"5",(character:FindFirstChild("LeftUpperLeg")  or character:FindFirstChild("Left Leg")))
+			blockupdate(block,"6",(character:FindFirstChild("RightUpperLeg") or character:FindFirstChild("Right Leg")))
+			blockupdate(block,"7",(character:FindFirstChild("LeftLowerLeg")  or character:FindFirstChild("Left Leg")))
+			blockupdate(block,"8",(character:FindFirstChild("RightLowerLeg") or character:FindFirstChild("Right Leg")))
+			blockupdate(block,"9",(character:FindFirstChild("LeftFoot")  or character:FindFirstChild("Left Leg")))
+			blockupdate(block,"10",(character:FindFirstChild("RightFoot") or character:FindFirstChild("Right Leg")))
+		end
+	end)
+end
+
+sizeBox.FocusLost:Connect(function() character:ScaleTo(sizeBox.Text) end)
